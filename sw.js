@@ -1,6 +1,6 @@
 // Кэш оболочки приложения: работает офлайн, обновляется в фоне.
 // При изменении файлов увеличь VERSION, чтобы старый кэш удалился.
-const VERSION = 'v9';
+const VERSION = 'v10';
 const CACHE = 'trenirovki-' + VERSION;
 const SHELL = [
   './',
@@ -27,17 +27,16 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// stale-while-revalidate: отдаём из кэша сразу, параллельно подтягиваем свежую версию
+// сначала сеть (в обход HTTP-кэша), без сети — из кэша
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
   e.respondWith(
-    caches.open(CACHE).then(async (cache) => {
-      const cached = await cache.match(req, { ignoreSearch: true });
-      const network = fetch(req)
-        .then((res) => { if (res.ok) cache.put(req, res.clone()); return res; })
-        .catch(() => cached);
-      return cached || network;
-    })
+    fetch(req, { cache: 'no-cache' })
+      .then((res) => {
+        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); }
+        return res;
+      })
+      .catch(() => caches.match(req, { ignoreSearch: true }))
   );
 });

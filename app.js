@@ -658,5 +658,14 @@ render();
 Sync.run();
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+    .then((r) => document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') r.update().catch(() => {}); }))
+    .catch(() => {});
+  // новая версия активировалась — один раз перезагружаемся, если не открыта форма
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloaded || !navigator.serviceWorker.controller) return;
+    reloaded = true;
+    if (!sheetRender) location.reload();
+  });
 }
