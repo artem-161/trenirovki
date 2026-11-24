@@ -1,6 +1,6 @@
 // Кэш оболочки приложения: работает офлайн, обновляется в фоне.
 // При изменении файлов увеличь VERSION, чтобы старый кэш удалился.
-const VERSION = 'v8';
+const VERSION = 'v9';
 const CACHE = 'trenirovki-' + VERSION;
 const SHELL = [
   './',

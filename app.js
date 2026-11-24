@@ -372,7 +372,7 @@ function syncHTML() {
   if (!Sync.user) return `<div class="card sync-form">
       <p class="muted" style="margin:0 0 10px">Войди, чтобы данные сохранялись в облаке и не терялись.</p>
       <input type="email" id="syncEmail" placeholder="Почта" autocomplete="email">
-      <input type="password" id="syncPass" placeholder="Пароль из 4 цифр" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="current-password">
+      <input type="password" id="syncPass" placeholder="Пароль из 6 цифр" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="current-password">
       ${Sync.status ? `<p class="muted" style="color:var(--danger)">${esc(Sync.status)}</p>` : ''}
       <button class="btn" data-act="sync-in">Войти</button>
       <button class="btn ghost" data-act="sync-up">Создать аккаунт</button>
@@ -573,7 +573,7 @@ const actions = {
   },
   async 'sync-in'(el, e, up) {
     const email = document.getElementById('syncEmail').value.trim(), pass = document.getElementById('syncPass').value;
-    if (!email || !/^\d{4}$/.test(pass)) { toast('Введи почту и пароль из 4 цифр'); return; }
+    if (!email || !/^\d{6}$/.test(pass)) { toast('Введи почту и пароль из 6 цифр'); return; }
     el.disabled = true;
     try {
       if (up) { if (!(await Sync.signUp(email, pass))) { alert('Проверь почту и подтверди аккаунт, затем нажми «Войти».'); render(); return; } }
